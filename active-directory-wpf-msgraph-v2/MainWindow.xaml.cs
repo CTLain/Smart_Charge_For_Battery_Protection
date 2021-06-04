@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+using Newtonsoft.Json.Linq;
 
 namespace active_directory_wpf_msgraph_v2
 {
@@ -16,10 +17,10 @@ namespace active_directory_wpf_msgraph_v2
         //Set the API Endpoint to Graph 'me' endpoint. 
         // To change from Microsoft public cloud to a national cloud, use another value of graphAPIEndpoint.
         // Reference with Graph endpoints here: https://docs.microsoft.com/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints
-        string graphAPIEndpoint = "https://graph.microsoft.com/v1.0/me";
-
+        string graphAPIEndpoint = "https://graph.microsoft.com/v1.0/me/calendar/events";
+        //string graphAPIEndpoint = "https://graph.microsoft.com/v1.0/groups/2e14d454-96b3-45ca-ad39-407c1599bad5/calendar/events";
         //Set the scope for API call to user.read
-        string[] scopes = new string[] { "user.read" };
+        string[] scopes = new string[] { "calendars.read", "user.read" };
 
 
         public MainWindow()
@@ -117,6 +118,9 @@ namespace active_directory_wpf_msgraph_v2
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 response = await httpClient.SendAsync(request);
                 var content = await response.Content.ReadAsStringAsync();
+                JObject jo = JObject.Parse(content);
+                dynamic dyna = jo as dynamic;
+                Console.WriteLine($"test11");
                 return content;
             }
             catch (Exception ex)
