@@ -17,8 +17,9 @@ namespace active_directory_wpf_msgraph_v2
         //Set the API Endpoint to Graph 'me' endpoint. 
         // To change from Microsoft public cloud to a national cloud, use another value of graphAPIEndpoint.
         // Reference with Graph endpoints here: https://docs.microsoft.com/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints
-        string graphAPIEndpoint = "https://graph.microsoft.com/v1.0/me/calendar/events";
+        //string graphAPIEndpoint = "https://graph.microsoft.com/v1.0/me/calendar/events?$select=subject,bodyPreview,start,end";
         //string graphAPIEndpoint = "https://graph.microsoft.com/v1.0/groups/2e14d454-96b3-45ca-ad39-407c1599bad5/calendar/events";
+        string graphAPIEndpoint = "https://graph.microsoft.com/v1.0/me/calendar/calendarView?startDateTime=2021-05-01T19:00:00&endDateTime=2021-05-20T19:00:00&$select=subject,bodyPreview,start,end";
         //Set the scope for API call to user.read
         string[] scopes = new string[] { "calendars.read", "user.read" };
 
