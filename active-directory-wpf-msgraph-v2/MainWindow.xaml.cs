@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace active_directory_wpf_msgraph_v2
 {
@@ -120,8 +121,9 @@ namespace active_directory_wpf_msgraph_v2
                 response = await httpClient.SendAsync(request);
                 var content = await response.Content.ReadAsStringAsync();
                 JObject jo = JObject.Parse(content);
-                dynamic dyna = jo as dynamic;
-                Console.WriteLine($"test11");
+                JArray eventArr = (JArray)jo["value"];
+
+                TimeSlotListCreate(eventArr);
                 return content;
             }
             catch (Exception ex)
@@ -169,6 +171,35 @@ namespace active_directory_wpf_msgraph_v2
         {
             SignOutButton_Click(sender, e);
             App.CreateApplication(howToSignIn.SelectedIndex != 2); // Not Azure AD accounts (that is use WAM accounts)
+        }
+
+        private void TimeSlotListCreate(JArray array) {
+            dynamic dynaEvnArr = array as dynamic;
+
+            List<timeSlot> ts = new List<timeSlot>();
+
+            DateTime startTime = new DateTime(2021, 05, 05, 12, 00, 00).ToUniversalTime();
+            DateTime endTime = new DateTime();
+
+            Console.WriteLine("data = {0}", dynaEvnArr[0].start.dateTime.ToString());
+
+            //startTime = DateTime.ParseExact(dynaEvnArr[0].start.dateTime.ToString(), "MM/dd/yyyy hh:mm:ss tt", null);
+            //endTime = DateTime.ParseExact(dynaEvnArr[0].end.dateTime.ToString(), "MM/dd/yyyy hh:mm:ss tt", null);
+            startTime = DateTime.ParseExact("5/5/2021", "MM/dd/yyyy", null);
+            endTime = DateTime.Now;
+            TimeSpan diff = endTime - startTime;
+
+            Console.WriteLine("total time = {0}", diff.TotalMinutes);
+
+
+
+        }
+
+        public class timeSlot
+        {
+            public string state { get; set; }
+
+            public double timeLength { get; set; }
         }
     }
 }
