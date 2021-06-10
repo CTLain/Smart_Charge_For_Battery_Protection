@@ -174,25 +174,75 @@ namespace active_directory_wpf_msgraph_v2
         }
 
         private void TimeSlotListCreate(JArray array) {
-            dynamic dynaEvnArr = array as dynamic;
 
-            List<timeSlot> ts = new List<timeSlot>();
 
-            DateTime startTime = new DateTime(2021, 05, 05, 12, 00, 00).ToUniversalTime();
-            DateTime endTime = new DateTime();
+            if (array.Count != 0)
+            {
+                dynamic dynaEvnArr = array as dynamic;
 
-            Console.WriteLine("data = {0}", dynaEvnArr[0].start.dateTime.ToString());
+                List<timeSlot> ts = new List<timeSlot>();
+                TimeSpan timeDiff = new TimeSpan();
+                //Debug.WriteLine($"test1, event number = {calendarView.Count}");
 
-            //startTime = DateTime.ParseExact(dynaEvnArr[0].start.dateTime.ToString(), "MM/dd/yyyy hh:mm:ss tt", null);
-            //endTime = DateTime.ParseExact(dynaEvnArr[0].end.dateTime.ToString(), "MM/dd/yyyy hh:mm:ss tt", null);
-            startTime = DateTime.ParseExact("5/5/2021", "MM/dd/yyyy", null);
-            endTime = DateTime.Now;
+                for (int i = 0; i < array.Count; i++)
+                {
+                    if (i == 0)
+                    { //calculate for first event now
+                        timeDiff = TimeSlotCal(dynaEvnArr[i].start.dateTime.ToString(), dynaEvnArr[i].end.dateTime.ToString());
+                        if (timeDiff.TotalMinutes > 0)
+                        {
+                            ts.Add(item: new timeSlot { state = "free", timeLength = timeDiff.TotalMinutes });
+                        }
+                        else
+                        {
+                            ts.Add(item: new timeSlot { state = "busy", timeLength = Math.Abs(timeDiff.TotalMinutes) });
+                        }
+                    }
+                    else
+                    {
+                        timeDiff = TimeSlotCal(dynaEvnArr[i].start.dateTime.ToString(), dynaEvnArr[i].end.dateTime.ToString());
+                        ts.Add(item: new timeSlot { state = "busy", timeLength = timeDiff.TotalMinutes });
+                        try
+                        {
+                            timeDiff = TimeSlotCal(dynaEvnArr[i].start.dateTime.ToString(), dynaEvnArr[i+1].end.dateTime.ToString());
+
+                            ts.Add(item: new timeSlot { state = "free", timeLength = timeDiff.TotalMinutes });
+                        }
+                        catch
+                        {
+                            timeDiff = TimeSlotCal(dynaEvnArr[i].end.dateTime.ToString(), dynaEvnArr[i].start.dateTime.ToString());
+
+                            ts.Add(item: new timeSlot { state = "free", timeLength = timeDiff.TotalMinutes });
+                        }
+                    }
+
+                }
+
+                ts.ForEach(vm =>
+                {
+                    Console.WriteLine($"ts0 state = {vm.state}, long = {vm.timeLength}");
+                }
+                );
+
+                //Console.WriteLine("total time = {0}", diff.TotalMinutes);
+
+            }
+
+        }
+
+        private TimeSpan TimeSlotCal(String start, String end)
+        {
+            //DateTime startTime = new DateTime();
+            //DateTime startTime = new DateTime(2021, 05, 05, 12, 00, 00).ToUniversalTime();
+
+            DateTime startTime = DateTime.ParseExact(start, "M/d/yyyy h:m:s tt", null);
+            DateTime endTime = DateTime.ParseExact(end, "M/d/yyyy h:m:s tt", null);
+
             TimeSpan diff = endTime - startTime;
+            
+            Console.WriteLine($"event spend time = {diff.TotalMinutes}");
 
-            Console.WriteLine("total time = {0}", diff.TotalMinutes);
-
-
-
+            return diff;
         }
 
         public class timeSlot
