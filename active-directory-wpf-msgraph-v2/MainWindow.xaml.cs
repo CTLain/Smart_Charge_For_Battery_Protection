@@ -137,6 +137,7 @@ namespace active_directory_wpf_msgraph_v2
                 BatteryInformation cap = BatteryInfo.GetBatteryInformation();
                 Console.WriteLine("battery full capacity = {0}, current capacity = {1}, charge rate = {2}", cap.FullChargeCapacity, cap.CurrentCapacity, cap.DischargeRate);
 
+                int chargeSpeed = ChargeSpeedCal(cap, ts);
                 //Console.WriteLine( RuntimeInformation.FrameworkDescription);
                 return content;
             }
@@ -280,7 +281,58 @@ namespace active_directory_wpf_msgraph_v2
             public double timeLength { get; set; }
         }
 
+        private Int32 ChargeSpeedCal(BatteryInformation batInfo, List<timeSlot> timeSlots)
+        {
+            Int32 fullChargeTime;
+            Int32 dischargeRate, chargeRate, emptyTime, buffer = 1;
 
+            switch (Math.Sign(batInfo.DischargeRate))
+            {
+                case 1:
+                    chargeRate = batInfo.DischargeRate;
+                    dischargeRate = 16796;
+                    break;
+                case -1:
+                    chargeRate = 48047;
+                    dischargeRate = Math.Abs(batInfo.DischargeRate);
+                    break;
+
+                default:
+                    chargeRate = 48047;
+                    dischargeRate = 16976;
+                    break;
+            }
+
+            fullChargeTime = ((batInfo.FullChargeCapacity - (int)batInfo.CurrentCapacity) * 10000
+                / chargeRate) * 60 / 10000;
+
+            emptyTime = ((int)batInfo.CurrentCapacity * buffer * 10000) /
+                dischargeRate * 60 / 10000;
+
+            Console.WriteLine("full charge time = {0}, empty time = {1}", fullChargeTime, emptyTime);
+
+            double totalTime = 0;
+            foreach (timeSlot t in timeSlots)
+            {
+                if (t.state.Equals("busy"))
+                {
+                    if (totalTime > fullChargeTime)
+                    {
+                        //reduce charge rate
+                    }
+                    break;
+                }
+                totalTime += t.timeLength;
+            }
+
+
+            // 1. compare with remaining
+            // > --> keep current or slow down
+            // < --> higher charge speed
+            // 2. long free time
+
+            return fullChargeTime;
+        }
 
         public class BatteryInformation
         {
