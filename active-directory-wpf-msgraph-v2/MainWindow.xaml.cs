@@ -21,7 +21,7 @@ namespace active_directory_wpf_msgraph_v2
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
- 
+
     public partial class MainWindow : Window
     {
         //Set the API Endpoint to Graph 'me' endpoint. 
@@ -51,7 +51,7 @@ namespace active_directory_wpf_msgraph_v2
 
             IAccount firstAccount;
 
-            switch(howToSignIn.SelectedIndex)
+            switch (howToSignIn.SelectedIndex)
             {
                 // 0: Use account used to signed-in in Windows (WAM)
                 case 0:
@@ -139,6 +139,7 @@ namespace active_directory_wpf_msgraph_v2
 
                 int chargeSpeed = ChargeSpeedCal(cap, ts);
                 //Console.WriteLine( RuntimeInformation.FrameworkDescription);
+                WmiExecute();
                 return content;
             }
             catch (Exception ex)
@@ -218,7 +219,7 @@ namespace active_directory_wpf_msgraph_v2
                         ts.Add(item: new timeSlot { state = "busy", timeLength = timeDiff.TotalMinutes });
                         try
                         {
-                            timeDiff = TimeSlotCal(dynaEvnArr[i].start.dateTime.ToString(), dynaEvnArr[i+1].end.dateTime.ToString());
+                            timeDiff = TimeSlotCal(dynaEvnArr[i].start.dateTime.ToString(), dynaEvnArr[i + 1].end.dateTime.ToString());
 
                             ts.Add(item: new timeSlot { state = "free", timeLength = timeDiff.TotalMinutes });
                         }
@@ -253,7 +254,7 @@ namespace active_directory_wpf_msgraph_v2
             DateTime endTime = DateTime.ParseExact(end, "M/d/yyyy h:m:s tt", null);
 
             TimeSpan diff = endTime - startTime;
-            
+
             Console.WriteLine($"event spend time = {diff.TotalMinutes}");
 
             return diff;
@@ -334,6 +335,26 @@ namespace active_directory_wpf_msgraph_v2
             return fullChargeTime;
         }
 
+        public void WmiExecute() 
+        {
+            ManagementObject classInstance = new ManagementObject("root\\WMI","Lenovo_SetBiosSetting.InstanceName='ACPI\\PNP0C14\\1_0'",null);
+
+            // Obtain in-parameters for the method
+            ManagementBaseObject inParams =
+                classInstance.GetMethodParameters("SetBiosSetting");
+
+            // Add the input parameters.
+            inParams["parameter"] = "WakeOnLAN,Enable;";
+
+            // Execute the method and obtain the return values.
+            ManagementBaseObject outParams =
+                classInstance.InvokeMethod("SetBiosSetting", inParams, null);
+
+            // List outParams
+            Console.WriteLine("Out parameters:");
+            Console.WriteLine("return: " + outParams["return"]);
+        }
+    
         public class BatteryInformation
         {
             public uint CurrentCapacity { get; set; }
