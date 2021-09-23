@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:active_directory_wpf_msgraph_v2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="Auto" Width="600" SizeToContent="Height">
+        Title="MainWindow" Height="Auto" Width="810.242" SizeToContent="Height" d:DesignHeight="462.701">
     <Grid>
         <StackPanel Background="Azure">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -19,8 +19,8 @@
             </StackPanel>
             <Label Content="API Call Results" Margin="0,0,0,-5" FontFamily="Segoe Ui" />
             <TextBox x:Name="ResultText" TextWrapping="Wrap" MinHeight="120" Margin="5" FontFamily="Segoe Ui"/>
-            <Label Content="Token Info" Margin="0,0,0,-5" FontFamily="Segoe Ui" />
-            <TextBox x:Name="TokenInfoText" TextWrapping="Wrap" MinHeight="70" Margin="5" FontFamily="Segoe Ui"/>
+            <Label Content="Token Info" Margin="0,0,0,-5" FontFamily="Segoe Ui" Height="34" />
+            <TextBox x:Name="TokenInfoText" TextWrapping="Wrap" MinHeight="70" Margin="5" FontFamily="Segoe Ui" Height="24"/>
         </StackPanel>
     </Grid>
 </Window>
