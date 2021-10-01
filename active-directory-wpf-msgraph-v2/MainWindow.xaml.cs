@@ -337,18 +337,18 @@ namespace active_directory_wpf_msgraph_v2
 
         public void WmiExecute() 
         {
-            ManagementObject classInstance = new ManagementObject("root\\WMI","Lenovo_SetBiosSetting.InstanceName='ACPI\\PNP0C14\\1_0'",null);
+            ManagementObject classInstance = new ManagementObject("root\\WMI","LCFC_SetChargeSpeed.InstanceName='ACPI\\PNP0C14\\1_0'",null);
 
             // Obtain in-parameters for the method
             ManagementBaseObject inParams =
-                classInstance.GetMethodParameters("SetBiosSetting");
+                classInstance.GetMethodParameters("SetChargeSpeed");
 
             // Add the input parameters.
-            inParams["parameter"] = "WakeOnLAN,Enable;";
+            inParams["parameter"] = "2";
 
             // Execute the method and obtain the return values.
             ManagementBaseObject outParams =
-                classInstance.InvokeMethod("SetBiosSetting", inParams, null);
+                classInstance.InvokeMethod("SetChargeSpeed", inParams, null);
 
             // List outParams
             Console.WriteLine("Out parameters:");
