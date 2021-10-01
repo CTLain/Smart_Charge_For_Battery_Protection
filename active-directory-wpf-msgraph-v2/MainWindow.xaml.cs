@@ -139,7 +139,7 @@ namespace active_directory_wpf_msgraph_v2
 
                 int chargeSpeed = ChargeSpeedCal(cap, ts);
                 //Console.WriteLine( RuntimeInformation.FrameworkDescription);
-                WmiExecute();
+                //WmiExecute();
                 return content;
             }
             catch (Exception ex)
