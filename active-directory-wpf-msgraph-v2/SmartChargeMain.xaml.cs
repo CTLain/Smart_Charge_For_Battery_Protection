@@ -42,6 +42,8 @@ namespace active_directory_wpf_msgraph_v2
 
         public SmartChargeMain()
         {
+            App.CreateApplication(false); // Not Azure AD accounts (that is use WAM accounts)
+
             InitializeComponent();
         }
 
