@@ -18,8 +18,8 @@
         </Grid.ColumnDefinitions>
 
         <Button Content="Next" HorizontalAlignment="Left" Height="17" Margin="10,134,0,0" VerticalAlignment="Top" Width="26" Click="Button_Click" FontSize="8"/>
-        <RadioButton Content="Use Outlook Calendar" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top"/>
-        <RadioButton Content="Choose your charge time" HorizontalAlignment="Left" Margin="10,53,0,0" VerticalAlignment="Top"/>
+        <RadioButton x:Name="Calendar_Radio" Content="Use Outlook Calendar" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top"/>
+        <RadioButton x:Name="User_Select_Radio" Content="Choose your charge time" HorizontalAlignment="Left" Margin="10,53,0,0" VerticalAlignment="Top"/>
         <Slider HorizontalAlignment="Left" Height="15" Margin="10,73,0,0" VerticalAlignment="Top" Width="379"/>
         <Button x:Name="Calculate_Button" Content="Calculate Charge Time" HorizontalAlignment="Left" Width="113" Margin="349,134,-0.4,2.2" FontSize="10" Click="Calculate_Button_Click"/>
         <TextBox x:Name="DebugText" HorizontalAlignment="Left" Height="154" Margin="10,10.4,0,-162" Grid.Row="1" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="442"/>

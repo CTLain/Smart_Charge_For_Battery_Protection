@@ -42,7 +42,7 @@ namespace active_directory_wpf_msgraph_v2
 
         public SmartChargeMain()
         {
-            App.CreateApplication(false); // Not Azure AD accounts (that is use WAM accounts)
+            App.CreateApplication(false); // use Azure AD account
 
             InitializeComponent();
         }
@@ -56,6 +56,19 @@ namespace active_directory_wpf_msgraph_v2
 
         private async void Calculate_Button_Click(object sender, RoutedEventArgs e)
         {
+
+            if (Calendar_Radio.IsChecked == true)
+            {
+                Process_With_Calendar();
+            }
+            else if (User_Select_Radio.IsChecked == true)
+            {
+                Process_With_Select();
+            }
+        }
+
+        private async void Process_With_Calendar()
+        {
             AuthenticationResult authResult = null;
             var app = App.PublicClientApp;
             DebugText.Text = string.Empty;
@@ -65,7 +78,6 @@ namespace active_directory_wpf_msgraph_v2
             //  Use any account(Azure AD). It's not using WAM
             var accounts = await app.GetAccountsAsync();
             firstAccount = accounts.FirstOrDefault();
-                  
 
             try
             {
@@ -100,11 +112,14 @@ namespace active_directory_wpf_msgraph_v2
             if (authResult != null)
             {
                 DebugText.Text = await GetHttpContentWithToken(graphAPIEndpoint, authResult.AccessToken);
-                //DisplayBasicTokenInfo(authResult);
-                //this.SignOutButton.Visibility = Visibility.Visible;
             }
+
         }
 
+        private void Process_With_Select()
+        {
+            DebugText.Clear();
+        }
         /// <summary>
         /// Perform an HTTP GET request to a URL using an HTTP Authorization header
         /// </summary>
@@ -125,14 +140,16 @@ namespace active_directory_wpf_msgraph_v2
                 JObject jo = JObject.Parse(content);
                 JArray eventArr = (JArray)jo["value"];
 
+                // create a time slot list with busy/free state and length
                 List<timeSlot> ts = TimeSlotListCreate(eventArr);
+                
                 BatteryStatusGet();
                 BatteryInformation cap = BatteryInfo.GetBatteryInformation();
                 Console.WriteLine("battery full capacity = {0}, current capacity = {1}, charge rate = {2}", cap.FullChargeCapacity, cap.CurrentCapacity, cap.DischargeRate);
 
                 int chargeSpeed = ChargeSpeedCal(cap, ts);
-                Console.WriteLine(RuntimeInformation.FrameworkDescription);
                 //WmiExecute();
+                
                 return content;
             }
             catch (Exception ex)
@@ -239,16 +256,20 @@ namespace active_directory_wpf_msgraph_v2
         {
             Int32 fullChargeTime;
             Int32 dischargeRate, chargeRate, emptyTime, buffer = 1;
+            bool IsCharge = false;
+
 
             switch (Math.Sign(batInfo.DischargeRate))
             {
                 case 1:
                     chargeRate = batInfo.DischargeRate;
                     dischargeRate = 16796;
+                    IsCharge = true;
                     break;
                 case -1:
                     chargeRate = 48047;
                     dischargeRate = Math.Abs(batInfo.DischargeRate);
+                    IsCharge = false;
                     break;
 
                 default:
@@ -268,14 +289,14 @@ namespace active_directory_wpf_msgraph_v2
             double totalTime = 0;
             foreach (timeSlot t in timeSlots)
             {
-                if (t.state.Equals("busy"))
-                {
-                    if (totalTime > fullChargeTime)
-                    {
-                        //reduce charge rate
-                    }
-                    break;
-                }
+                //if (t.state.Equals("busy"))
+                //{
+                //    if (totalTime > fullChargeTime)
+                //    {
+                //        //reduce charge rate
+                //    }
+                //    break;
+                //}
                 totalTime += t.timeLength;
             }
 
