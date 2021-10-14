@@ -189,7 +189,8 @@ namespace active_directory_wpf_msgraph_v2
             App.CreateApplication(howToSignIn.SelectedIndex != 2); // Not Azure AD accounts (that is use WAM accounts)
         }
 
-        private List<timeSlot> TimeSlotListCreate(JArray array) {
+        private List<timeSlot> TimeSlotListCreate(JArray array)
+        {
 
             List<timeSlot> ts = new List<timeSlot>();
             if (array.Count != 0)
