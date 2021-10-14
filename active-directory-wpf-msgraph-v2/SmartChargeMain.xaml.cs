@@ -131,7 +131,7 @@ namespace active_directory_wpf_msgraph_v2
                 Console.WriteLine("battery full capacity = {0}, current capacity = {1}, charge rate = {2}", cap.FullChargeCapacity, cap.CurrentCapacity, cap.DischargeRate);
 
                 int chargeSpeed = ChargeSpeedCal(cap, ts);
-                Console.WriteLine( RuntimeInformation.FrameworkDescription);
+                Console.WriteLine(RuntimeInformation.FrameworkDescription);
                 //WmiExecute();
                 return content;
             }
