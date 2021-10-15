@@ -257,7 +257,7 @@ namespace active_directory_wpf_msgraph_v2
             Int32 fullChargeTime;
             Int32 dischargeRate, chargeRate, emptyTime, buffer = 1;
             bool IsCharge = false;
-
+            int chargeCurrent = 0;
 
             switch (Math.Sign(batInfo.DischargeRate))
             {
@@ -278,35 +278,35 @@ namespace active_directory_wpf_msgraph_v2
                     break;
             }
 
+            if (!IsCharge) //return if not in charge state
+                return chargeCurrent;
+
             fullChargeTime = ((batInfo.FullChargeCapacity - (int)batInfo.CurrentCapacity) * 10000
                 / chargeRate) * 60 / 10000;
 
             emptyTime = ((int)batInfo.CurrentCapacity * buffer * 10000) /
                 dischargeRate * 60 / 10000;
 
-            Console.WriteLine("full charge time = {0}, empty time = {1}", fullChargeTime, emptyTime);
+            Console.WriteLine("full charge time = {0}, empty time = {1}, voltage = {2}", fullChargeTime, emptyTime, batInfo.Voltage);
 
-            double totalTime = 0;
-            foreach (timeSlot t in timeSlots)
+            double ACtime = 0;
+            if (timeSlots[0].state.Equals("free"))
             {
-                //if (t.state.Equals("busy"))
-                //{
-                //    if (totalTime > fullChargeTime)
-                //    {
-                //        //reduce charge rate
-                //    }
-                //    break;
-                //}
-                totalTime += t.timeLength;
+                ACtime = timeSlots[0].timeLength;
+                
+                var c = (timeSlots[1].timeLength / 60) * dischargeRate; //needed Wh
+                if (c > batInfo.CurrentCapacity) //full speed charge
+                {
+                    chargeCurrent = 0xFF * 100;
+                }else
+                {
+                    //current(mA) = remain capacity(mWh) / charge time (in hours) / battery voltage (mV) * 1000
+                    chargeCurrent = (int)((batInfo.FullChargeCapacity - (int)batInfo.CurrentCapacity) / (ACtime / 60) / 12200 * 1000);
+                }
             }
 
-
-            // 1. compare with remaining
-            // > --> keep current or slow down
-            // < --> higher charge speed
-            // 2. long free time
-
-            return fullChargeTime;
+            MessageBox.Show("you will be charge in "+ chargeCurrent+"mA!");
+            return chargeCurrent / 100;
         }
 
         public void WmiExecute()
