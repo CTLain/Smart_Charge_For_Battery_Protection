@@ -303,6 +303,21 @@ namespace active_directory_wpf_msgraph_v2
                     //current(mA) = remain capacity(mWh) / charge time (in hours) / battery voltage (mV) * 1000
                     chargeCurrent = (int)((batInfo.FullChargeCapacity - (int)batInfo.CurrentCapacity) / (ACtime / 60) / 12200 * 1000);
                 }
+            }else
+            {
+                //first time slot is busy
+                ACtime = timeSlots[0].timeLength + timeSlots[1].timeLength;
+                
+                var c = (timeSlots[2].timeLength / 60) * dischargeRate; //needed Wh
+                if (c > batInfo.CurrentCapacity) //full speed charge
+                {
+                    chargeCurrent = 0xFF * 100;
+                }
+                else
+                {
+                    //current(mA) = remain capacity(mWh) / charge time (in hours) / battery voltage (mV) * 1000
+                    chargeCurrent = (int)((batInfo.FullChargeCapacity - (int)batInfo.CurrentCapacity) / (ACtime / 60) / 12200 * 1000);
+                }
             }
 
             MessageBox.Show("you will be charge in "+ chargeCurrent+"mA!");
