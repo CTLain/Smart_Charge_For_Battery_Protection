@@ -119,6 +119,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="batt_info.cs" />
     <Compile Include="SmartChargeMain.xaml.cs">
       <DependentUpon>SmartChargeMain.xaml</DependentUpon>
     </Compile>
