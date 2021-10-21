@@ -10,6 +10,10 @@ using Newtonsoft.Json.Linq;
 using System.Management;
 
 using smart_charge_battery_info;
+using CsvHelper;
+using System.IO;
+using System.Globalization;
+using System.Windows.Threading;
 
 namespace active_directory_wpf_msgraph_v2
 {
@@ -33,6 +37,31 @@ namespace active_directory_wpf_msgraph_v2
             App.CreateApplication(false); // use Azure AD account
 
             InitializeComponent();
+
+            //log to CSV every 10 mins
+            DispatcherTimer _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromMinutes(10);
+            _timer.Tick += PConsumption_to_CSV;
+            _timer.Start();
+        }
+
+        private static void PConsumption_to_CSV(object sender, EventArgs e)
+        {
+            //log discharge rate to csv file
+            Power_Consumption_Data pcw = new Power_Consumption_Data();
+            pcw.Index = 1;
+            pcw.Discharge_Rate = 1234;
+//            pcw.dt = DateTime.Now;
+
+            using (var writer = new StreamWriter("pcw.csv", true))
+            {
+                //using (var writer = new StreamWriter("foo.csv"))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecord(pcw);
+                    csv.NextRecord();
+                }
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -332,5 +361,12 @@ namespace active_directory_wpf_msgraph_v2
             Console.WriteLine("return: " + outParams["return"]);
         }
 
+    }
+
+    internal class Power_Consumption_Data
+    {
+        public int Index { get; set; }
+        public int Discharge_Rate { get; set; }
+        public DateTime dt { get; set; }
     }
 }
