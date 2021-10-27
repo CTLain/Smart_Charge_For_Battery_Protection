@@ -14,6 +14,7 @@ using CsvHelper;
 using System.IO;
 using System.Globalization;
 using System.Windows.Threading;
+using CsvHelper.Configuration.Attributes;
 
 namespace active_directory_wpf_msgraph_v2
 {
@@ -47,15 +48,21 @@ namespace active_directory_wpf_msgraph_v2
 
         private static void PConsumption_to_CSV(object sender, EventArgs e)
         {
+            BatteryInformation cap = BatteryInfo.GetBatteryInformation();
+
+            if (Math.Sign(cap.DischargeRate) != -1)
+            {
+                return; //does not need to record data if not in discharge;
+            }
+
             //log discharge rate to csv file
             Power_Consumption_Data pcw = new Power_Consumption_Data();
             pcw.Index = 1;
-            pcw.Discharge_Rate = 1234;
+            pcw.Discharge_Rate = Math.Abs(cap.DischargeRate);
 //            pcw.dt = DateTime.Now;
 
             using (var writer = new StreamWriter("pcw.csv", true))
             {
-                //using (var writer = new StreamWriter("foo.csv"))
                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
                     csv.WriteRecord(pcw);
@@ -272,20 +279,38 @@ namespace active_directory_wpf_msgraph_v2
         private Int32 ChargeSpeedCal(BatteryInformation batInfo, List<timeSlot> timeSlots)
         {
             Int32 fullChargeTime;
-            Int32 dischargeRate, chargeRate, emptyTime, buffer = 1;
+            Int32 dischargeRate=0, chargeRate, emptyTime, buffer = 1;
             bool IsCharge = false;
             int chargeCurrent = 0;
+
+            using (var reader = new StreamReader("pcw.csv"))
+            {
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                    var records = new List<Power_Consumption_Data>();
+                    double index = 0;
+                    double rate_total = 0;
+                    while (csv.Read())
+                    {
+                        index ++;
+                        rate_total += csv.GetField<int>(1);
+                        dischargeRate = (int)(rate_total / index);
+                    }
+                }
+            }
+
+            Console.WriteLine("discharge rate = " + dischargeRate);
 
             switch (Math.Sign(batInfo.DischargeRate))
             {
                 case 1:
                     chargeRate = batInfo.DischargeRate;
-                    dischargeRate = 16796;
+                    //dischargeRate = 16796;
                     IsCharge = true;
                     break;
                 case -1:
                     chargeRate = 48047;
-                    dischargeRate = Math.Abs(batInfo.DischargeRate);
+                    //dischargeRate = Math.Abs(batInfo.DischargeRate);
                     IsCharge = false;
                     break;
 
@@ -365,8 +390,14 @@ namespace active_directory_wpf_msgraph_v2
 
     internal class Power_Consumption_Data
     {
+        [Index(0)]
         public int Index { get; set; }
+
+        [Index(1)]
         public int Discharge_Rate { get; set; }
+
+        [Index(2)]
         public DateTime dt { get; set; }
     }
+
 }
