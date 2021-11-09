@@ -142,6 +142,14 @@ namespace active_directory_wpf_msgraph_v2
 
         private void Process_With_Select()
         {
+            int chargeCurrent;
+
+            BatteryInformation cap = BatteryInfo.GetBatteryInformation();
+
+            //current(mA) = remain capacity(mWh) / charge time (in hours) / battery voltage (mV) * 1000
+            chargeCurrent = (int)((cap.FullChargeCapacity - (int)cap.CurrentCapacity) / (User_Select_Charge_Time.Value) / 12200 * 1000);
+
+            MessageBox.Show(chargeCurrent + "mA!");
             DebugText.Clear();
         }
         /// <summary>
@@ -362,7 +370,7 @@ namespace active_directory_wpf_msgraph_v2
                 }
             }
 
-            MessageBox.Show("you will be charge in "+ chargeCurrent+"mA!");
+            MessageBox.Show("You will be charge in "+ chargeCurrent + "mA for " + ACtime + " minutes\n Estimate battery capacity will be 70%!");
             return chargeCurrent / 100;
         }
 
